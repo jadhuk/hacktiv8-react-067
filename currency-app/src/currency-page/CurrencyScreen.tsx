@@ -26,7 +26,6 @@ interface Currency {
   };
 }
 
-
 interface Props {}
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -66,7 +65,7 @@ const useStyles = makeStyles(() => ({
 
 const CurrencyPage: React.FC<Props> = (props) => {
   const classes = useStyles();
-  const [data, setData] = useState<Currency[]>([]);
+  const [data, setData] = useState<Currency>();
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -78,65 +77,101 @@ const CurrencyPage: React.FC<Props> = (props) => {
     )
       .then((response) => response.json())
       .then((result) => {
+        if (result?.rates) {
+          for (let key in result.rates) {
+            result.rates[key.toLowerCase()] =
+              result.rates[key as keyof typeof result.rates];
+            delete result.rates[key];
+          }
+          //   const ratesAsNumber: { [key: string]: number } = {};
+          //   for (const [key, value] of Object.entries(result.rates)) {
+          //     result.rates[parseInt(value as string)] =
+          //       ratesAsNumber[key as keyof typeof ratesAsNumber];
+          //   }
+        }
+        //
         setData(result);
       });
   }, []);
 
-  // const data ={
-//   base: "USD",
-//   date: "2023-02-15 00:00:00+00",
-//   rates: {
-//     CAD: "1.334140998289538",
-//     CHF: "0.9215963333041568",
-//     EUR: "0.9315135335872883",
-//     GBP: "0.8214896644492455",
-//     IDR: "15179.261954219648",
-//     JPY: "132.98899996491014",
-//   }
-// }
-
-//   const ratesArray = Object.keys(data?.rates).map(key => {
-//     return {
-//       currency: key,
-//       rate: data.rates[key]
-//     };
-//   });
   return (
     <>
-      <Box className={classes.root}>
-        <TableContainer className={classes.tableContainer} component={Paper}>
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Currency</StyledTableCell>
-                <StyledTableCell align="left">We Buy</StyledTableCell>
-                <StyledTableCell align="left">Exchange Rate</StyledTableCell>
-                <StyledTableCell align="left">We Sell</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {/* <StyledTableRow>
-                <StyledTableCell component="th" scope="row">
-                  name
-                </StyledTableCell>
-                <StyledTableCell align="left">Dummy</StyledTableCell>
-                <StyledTableCell align="left">Dummy</StyledTableCell>
-                <StyledTableCell align="left">Dummy</StyledTableCell>
-              </StyledTableRow> */}
-              {/* {data?.map((currency) => (
+      {!!loading && (
+        <Box className={classes.root}>
+          <TableContainer className={classes.tableContainer} component={Paper}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Currency</StyledTableCell>
+                  <StyledTableCell align="left">We Buy</StyledTableCell>
+                  <StyledTableCell align="left">Exchange Rate</StyledTableCell>
+                  <StyledTableCell align="left">We Sell</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
                 <StyledTableRow>
                   <StyledTableCell component="th" scope="row">
-                     {currency.rates}
+                    CAD
                   </StyledTableCell>
-                  <StyledTableCell align="left">Dummy</StyledTableCell>
-                  <StyledTableCell align="left">Dummy</StyledTableCell>
-                  <StyledTableCell align="left">Dummy</StyledTableCell>
+                  <StyledTableCell align="left">teas</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {data?.rates.cad}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">CHF</StyledTableCell>
                 </StyledTableRow>
-              ))} */}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
+                <StyledTableRow>
+                  <StyledTableCell component="th" scope="row">
+                    IDR
+                  </StyledTableCell>
+                  <StyledTableCell align="left">teas</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {data?.rates.idr}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">CHF</StyledTableCell>
+                </StyledTableRow>{" "}
+                <StyledTableRow>
+                  <StyledTableCell component="th" scope="row">
+                    JPY
+                  </StyledTableCell>
+                  <StyledTableCell align="left">teas</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {data?.rates.jpy}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">CHF</StyledTableCell>
+                </StyledTableRow>{" "}
+                <StyledTableRow>
+                  <StyledTableCell component="th" scope="row">
+                    CHF
+                  </StyledTableCell>
+                  <StyledTableCell align="left">teas</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {data?.rates.chf}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">CHF</StyledTableCell>
+                </StyledTableRow>{" "}
+                <StyledTableRow>
+                  <StyledTableCell component="th" scope="row">
+                    EUR
+                  </StyledTableCell>
+                  <StyledTableCell align="left">teas</StyledTableCell>
+                  <StyledTableCell align="left">
+                    {data?.rates.eur}
+                  </StyledTableCell>
+                  <StyledTableCell align="left">CHF</StyledTableCell>
+                </StyledTableRow>
+                <StyledTableRow>
+                  <StyledTableCell component="th" scope="row">
+                    GBP
+                  </StyledTableCell>
+                  <StyledTableCell align="left">teas</StyledTableCell>
+                  <StyledTableCell align="left">{data?.rates.gbp}</StyledTableCell>
+                  <StyledTableCell align="left">CHF</StyledTableCell>
+                </StyledTableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      )}
     </>
   );
 };
